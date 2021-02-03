@@ -3,26 +3,22 @@
     require "header.php";
 ?>
 
-<main>
-    <form>
-    <div class="form-group row">
-        <label for="username" class="col-sm-2 col-form-label">Identifiant :</label>
-        <div class="col-sm-6">
-        <input type="text" class="form-control" id="username" name="username">
-        </div>
-    </div>
-    <div class="form-group row">
-        <label for="pwd" class="col-sm-2 col-form-label">Mot de passe :</label>
-        <div class="col-sm-6">
-        <input type="password" class="form-control" id="pwd" name="pwd">
-        </div>
-    </div>
-    <div class="form-group row">
-    <div class="col-sm-10">
-      <button type="submit" class="btn btn-primary">Se connecter</button>
-    </div>
-  </div>
+<main >
+    <form method="POST" action="login.php">
+            <label for="username">Identifiant :</label><br>
+            <input type="text" id="username" name="username"><br>
+            <label for="pwd" class="">Mot de passe :</label><br>
+            <input type="password" id="pwd" name="pwd"><br>
+            <button type="submit" name="login-submit">Se connecter</button>
     </form>
+
+<?php
+    if(isset($_GET['login'])) {
+        if($_GET['login'] === "fail") {
+            echo "Votre identifiant et/ou votre mot de passe est incorrect.";
+        }
+    }
+?>    
 </main>
 
 <?php
