@@ -3,6 +3,7 @@
         header("Location: lightBulbList.php");
         exit();
     } else {
+        
         $db = "ampoule";
         $host = "localhost";
         $usernameDB = "root";
@@ -12,6 +13,11 @@
         $etage = $_POST['select-floor'];
         $position = $_POST['select-position'];
         $price = $_POST['add-price'];
+
+        if(empty($date) || empty($etage) || empty($positon) || empty($price)) {
+            header("Location: lightBulbList.php?error=emptyfields");
+            exit();
+        }
 
         try {
             $conn = new PDO("mysql:host=$host;dbname=$db;charset=utf8", $usernameDB, $passwordDB);

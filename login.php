@@ -8,6 +8,15 @@
         header("Location: index.php");
         exit();
     } else {
+
+        $usernameLogin = $_POST['username'];
+        $passwordLogin = $_POST['pwd'];
+
+        if (empty($passwordLogin) || empty($usernameLogin)) {
+            header("Location: index.php?error=emptyfields");
+            exit();
+        }
+
         try {
             $conn = new PDO("mysql:host=$host;dbname=$db;charset=utf8", $usernameDB, $passwordDB);
             $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -23,7 +32,7 @@
                 $result = $stmt->fetch();
                 if($result['password'] === $_POST['pwd']) {
                     session_start();
-                    $_SESSION['username'] === $_POST['username'];
+                    $_SESSION['username'] = $result['username'];
                     header("Location: lightBulbList.php");
                     exit();
                 } else {

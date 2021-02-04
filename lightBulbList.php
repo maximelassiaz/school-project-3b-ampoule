@@ -1,59 +1,85 @@
 <?php 
     $title = "Dashboard";
     require "header.php";
-    // if(isset($_SESSION['username'])) {
+    if(!isset($_SESSION['username'])) {
+        header("Location: index.php");
+        exit();
+    }
 ?>
-
-
 <main>
-    <button type="button" class="btn btn-primary">Ajouter un changement</button>
+    <button type="submit" class="btn btn-primary my-3 mx-5" data-toggle="collapse" data-target="#toggleForm">
+            Créer une entrée
+    </button>
+    <div id="toggleForm" class="collapse">       
+        <form class="col-sm-6 mx-auto p-3 my-5 bg-dark rounded" method="POST" action="add.php">
+            <div class="form-group">
+                <label for="add-date" class="text-white">Date du changement :</label>
+                <input type="datetime-local" class="form-control" id="add-date" name="add-date" value="<?php echo date("Y-m-d\TH:i") ;?>" required>
+            </div>
+            <div class="form-group">
+                <label for="select-floor" class="text-white">Étage :</label>
+                <select class="form-control" id="select-floor" name="select-floor" required>
+                    <?php 
+                        for($i = 0; $i < 12; $i++) { ?>
+                            <option value="<?= $i ;?>">
+                            <?php if ($i === 0) {
+                                echo "RDC";
+                            } else {
+                                echo "Étage $i";
+                            } ?>
+                            </option>
+                    <?php   }  ?>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="select-position" class="text-white">Position :</label>
+                <select class="form-control" id="select-position" name="select-position" required>
+                    <option value="1">Droite</option>
+                    <option value="2">Gauche</option>
+                    <option value="3">Fond</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="add-price" class="text-white">Prix de l'ampoule :</label>
+                <input type="number" step="any" class="form-control" id="add-price" name="add-price" required>
+            </div>
+            <button type="submit" class="btn btn-primary" name="add-submit">Valider l'entrée</button>
+        </form>  
+    </div>
 
-    <form method="POST" action="add.php">
-        <div class="form-group row">
-            <label for="add-date" class="col-sm-2 col-form-label">Date du changement :</label>
-            <div class="col-sm-10">
-                <input type="datetime-local" class="form-control" id="add-date" name="add-date">
-            </div>
-        </div>
-        <div class="form-group row">
-            <label for="select-floor" class="col-sm-2 col-form-label">Étage :</label>
-            <select name="select-floor" class="form-control col-sm-10" id="select-floor">
-                <?php 
-                    for($i = 0; $i < 12; $i++) {
-                        echo "<option value=$i>";
-                        if ($i === 0) {
-                            echo "RDC";
-                        } else {
-                            echo "Étage $i";
-                        }
-                        echo "</option>";
-                    }
-                ?>
-            </select>
-        </div>
-        <div class="form-group row">
-            <label for="select-position" class="col-sm-2 col-form-label">Position :</label>
-            <select class="form-control col-sm-10" id=select-position" name="select-position">
-                <option value="1">Droite</option>
-                <option value="2">Gauche</option>
-                <option value="3">Fond</option>
-            </select>
-        </div>
-        <div class="form-group row">
-            <label for="add-price" class="col-sm-2 col-form-label">Prix :</label>
-            <div class="col-sm-10">
-                <input type="number" step="any" class="form-control" id="add-price" name="add-price">
-            </div>
-        </div>
-        <div class="form-group row">
-            <div class="col-sm-10">
-            <button type="submit" class="btn btn-primary" name="add-submit">Soumettre</button>
-            </div>
-        </div>
-    </form>
+    <?php
+        if(isset($_GET['add'])) {
+            if($_GET['add'] === "success") {
+                echo "<p class='text-success text-center font-weight-bold'>Votre nouvelle a bien été ajoutée</p>";
+            }
+        }
 
-    <table class="table">
-        <thead class="thead-dark">
+        if(isset($_GET['error'])) {
+            if($_GET['error'] === "emptyfields") {
+                echo "<p class='text-danger text-center font-weight-bold'>Tous les champs doivent être remplis !</p>";
+            }
+        }
+
+        if(isset($_GET['update'])) {
+            if($_GET['update'] === "success") {
+                echo "<p class='text-success text-center font-weight-bold'>Votre modification a bien été enregistrée.</p>";
+            }
+        }
+
+        if(isset($_GET['delete'])) {
+            if($_GET['delete'] === "success") {
+                echo "<p class='text-success text-center font-weight-bold'>La suppression a bien été effectuée.</p>";
+            }
+        }
+
+    ?>
+
+
+     
+
+
+    <table class="table table-striped table-dark w-75 mx-auto rounded">
+        <thead>
             <tr>
                 <th scope="col">Id</th>
                 <th scope="col">Date</th>
@@ -64,11 +90,12 @@
             </tr>
         </thead>
         <tbody>
+
         <?php 
             $db = "ampoule";
             $host = "localhost";
             $usernameDB = "root";
-            $passwordDB = "";  
+            $passwordDB = "";
 
             try {
                 $conn = new PDO("mysql:host=$host;dbname=$db;charset=utf8", $usernameDB, $passwordDB);
@@ -82,119 +109,139 @@
 
                 foreach($rows as $row) {
                     $datechg = new DateTime($row['date_changement']);
-                    $dateFormat = date_format($datechg, 'd/m/Y - H:i');
+                    $dateFormat = date_format($datechg, 'd/m/Y - H:i'); 
+                    $dateTimeFormat = date_format($datechg, "Y-m-d\TH:i") ?>
 
-                    echo "<tr><td>" . $row['id'] . "</td>";
-                    echo "<td>" . $dateFormat . "</td>";
-                    echo "<td>" . $row['etage'] . "</td>";
-                    echo "<td>" . $row['position'] . "</td>";
-                    echo "<td>" . $row['prix'] . "</td>";
-                    echo "<td><button type='button' class='btn btn-warning' data-toggle='modal' data-target='#modifyModal" . $row['id'] . "'>
-                    Modifier
-                    </button></td>";
-                    echo "<div class='modal fade' id='modifyModal" . $row['id'] . "' tabindex='-1' role='dialog' aria-labelledby='modifyModalLabel" . $row['id'] . "' aria-hidden='true'>
-                        <div class='modal-dialog' role='document'>
-                        <div class='modal-content'>
-                            <div class='modal-header'>
-                                <h5 class='modal-title' id='modifyModalLabel" . $row['id'] . "'>Modifier un changement d'ampoule</h5>
-                                <button type='button' class='close' data-dismiss='modal' aria-label='Close'>
-                                    <span aria-hidden='true'>&times;</span>
-                                </button>
-                            </div>
-                            <div class='modal-body'>
+                        <tr>
+                        <td><?= $row['id'] ;?></td>
+                        <td><?= $dateFormat ;?></td>
+                        <td><?= $row['etage'] ;?></td>
+                        <td><?= $row['position'] ;?></td>
+                        <td><?=$row['prix'] ;?></td>
+                        <td>
+                            <button type="button" class="btn btn-warning" data-toggle="modal" data-target="<?= "#modalUpdate" . $row['id'] ;?>">
+                                Modifier
+                            </button>
 
-                                <form method='POST' action='update.php?id=" . $row['id'] . "'>
-                                    <div class='form-group row'>
-                                        <label for='modify-date' class='col-sm-2 col-form-label'>Date du changement :</label>
-                                        <div class='col-sm-10'>
-                                            <input type='datetime-local' class='form-control' id='modify-date' name='modify-date' value='" . $row['date_changement'] . "'>
-                                        </div>
-                                    </div>
-                                    <div class='form-group row'>
-                                        <label for='modify-floor' class='col-sm-2 col-form-label'>Étage :</label>
-                                        <select name='modify-floor' class='form-control col-sm-10' id='modify-floor'>
-                                                <option value=" . $row['etage'] . " selected='selected'>Étage " . $row['etage'] . "</option> ";
-                                         
-                                                for($i = 0; $i < 12; $i++) {
-                                                    echo "<option value=$i>";
-                                                    if ($i === 0) {
-                                                        echo "RDC";
-                                                    } else {
-                                                        echo "Étage $i";
-                                                    }
-                                                    echo "</option>";
-                                                }
-                            
-                                        echo "</select>
-                                    </div>
-                                    <div class='form-group row'>
-                                        <label for='modify-position' class='col-sm-2 col-form-label'>Position :</label>
-                                        <select class='form-control col-sm-10' id='modify-position' name='modify-position'>
-                                            <option value='1'>Droite</option>
-                                            <option value='2'>Gauche</option>
-                                            <option value='3'>Fond</option>
-                                        </select>
-                                    </div>
-                                    <div class='form-group row'>
-                                        <label for='modify-price' class='col-sm-2 col-form-label'>Prix :</label>
-                                        <div class='col-sm-10'>
-                                            <input type='number' step='any' class='form-control' id='modify-price' name='modify-price' value=" . $row['prix'] . ">
-                                        </div>
-                                    </div>
-                                <div class='form-group row'>
-                                    <div class='col-sm-10'>
-                                    <button type='submit' class='btn btn-primary' name='modify-submit'>Soumettre</button>
-                                    </div>
+                            <div class="modal fade" id="<?= "modalUpdate" . $row['id'] ;?>" tabindex="-1" role="dialog" aria-labelledby="<?= "modalUpdateLabel" . $row['id'] ;?>" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content bg-dark">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="<?= "modalUpdateLabel" . $row['id'] ;?>">Modifier une entrée</h5>
+                                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                    </button>
                                 </div>
-                            </form>
-
-                            </div>
-                                <div class='modal-footer'>
-                                    <button type='button' class='btn btn-secondary' data-dismiss='modal'>Annuler</button>
+                                <div class="modal-body">
+                                    <form class="col-sm-6 mx-auto p-3 my-5 bg-dark rounded" method="POST" action="<?= "update.php?id=" . $row['id'] ;?>">
+                                        <div class="form-group">
+                                            <label for="modify-date" class="text-white">Date du changement :</label>
+                                            <input type="datetime-local" class="form-control" id="modify-date" name="modify-date" value="<?= $dateTimeFormat ;?>" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="modify-floor" class="text-white">Étage :</label>
+                                            <select class="form-control" id="modify-floor" name="modify-floor" required>
+                                                <option selected="selected" value="<?= $row['etage'] ;?>">
+                                                <?php if ((int)$row['etage'] === 0) {
+                                                            echo "RDC";
+                                                        } else {
+                                                            echo "Étage " . $row['etage'];
+                                                        } ?>
+                                                </option>
+                                                <?php 
+                                                    for($i = 0; $i < 12; $i++) { ?>
+                                                        <option value="<?= $i ;?>">
+                                                        <?php if ($i === 0) {
+                                                            echo "RDC";
+                                                        } else {
+                                                            echo "Étage $i";
+                                                        } ?>
+                                                        </option>
+                                                <?php   }  ?>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="modify-position" class="text-white">Position :</label>
+                                            <select class="form-control" id="modify-position" name="modify-position" required>
+                                                <option selected=selected value="<?= $row['position'] ;?>">
+                                                    <?php 
+                                                        $positionInt = (int)$row['position'];
+                                                        switch ($positionInt) {
+                                                            case 1: 
+                                                                echo "Droite";
+                                                                break;
+                                                            case 2:
+                                                                echo "Gauche";
+                                                                break;
+                                                            case 3: 
+                                                                echo "Fond";
+                                                                break;
+                                                            default:
+                                                                echo "Non renseigné";
+                                                        }
+                                                    ?>
+                                                </option> 
+                                                <option value="1">Droite</option>
+                                                <option value="2">Gauche</option>
+                                                <option value="3">Fond</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="modify-price" class="text-white">Prix de l'ampoule :</label>
+                                            <input type="number" step="any" class="form-control" id="modify-price" name="modify-price" value="<?= $row['prix'] ;?>" required>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary" name="modify-submit">Valider l'entrée</button>
+                                    </form>  
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                                    <button type="button" class="btn btn-warning">Modifier</button>
+                                </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>";
-                    echo "<td><button type='button' class='btn btn-danger' data-toggle='modal' data-target='#deleteModal' " . $row['id'] . " >
-                    Supprimer
-                    </button></td></tr>";
+                            </div>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-danger" data-toggle="modal" data-target="<?= "#modalDelete" . $row['id'] ;?>">
+                                Supprimer
+                            </button>
 
-                    echo "<div class='modal fade' id='deleteModal'" . $row['id'] . "  tabindex='-1' role='dialog' aria-labelledby='deleteModalLabel'" . $row['id'] . " aria-hidden='true'>
-
-                    <div class='modal-dialog' role='document'>
-                        <div class='modal-content'>
-                            <div class='modal-header'>
-                                <h5 class='modal-title' id='deleteModalLabel'" . $row['id'] . " >Modal title</h5>
-                                <button type='button' class='close' data-dismiss='modal' aria-label='Close'>
-                                    <span aria-hidden='true'>&times;</span>
-                                </button>
+                            <div class="modal fade" id="<?= "modalDelete" . $row['id'] ;?>" tabindex="-1" role="dialog" aria-labelledby="<?= "modalDeleteLabel" . $row['id'] ;?>" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content bg-dark">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="<?= "modalDeleteLabel" . $row['id'] ;?>">Supprimer une entrée</h5>
+                                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <p class="text-danger font-weight-bold">Attention la suppression d'un historique est définitive !</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                                    <a class="btn btn-danger" href="<?= "delete.php?id=" . $row['id'] ?>;" role="button">Supprimer définitivement</a>
+                                </div>
+                                </div>
                             </div>
-                            <div class='modal-body'>
-                                <p> Attention, vous allez supprimer définitivement un élément de l'historique.</p>
                             </div>
-                            <div class='modal-footer'>
-                                <button type='button' class='btn btn-secondary' data-dismiss='modal'>Fermer</button>
-                                <a class='btn btn-danger' href='delete.php?id=" . $row['id'] ."' role='button'>Supprimer définitivement</a>
-                            </div>
-                        </div>
-                    </div>
-                    </div>";
+                        </td>
+                        </tr>
+                <?php        
                 }
             } catch (PDOException $e) {
                 die("Erreur : " . $e->getMessage());
             }
         ?>
         </tbody>
+    </table> 
+
+        <tbody>
+        
+        </tbody>
     </table>
-
+    <div id="overlay"></div>
 </main>
-
-<?php
-    // } else {
-    //     header("Location: index.php");
-    //     exit();
-    // }
-?> 
 
 <?php 
     require "footer.php";
