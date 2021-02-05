@@ -115,8 +115,33 @@
                         <tr>
                         <td><?= $row['id'] ;?></td>
                         <td><?= $dateFormat ;?></td>
-                        <td><?= $row['etage'] ;?></td>
-                        <td><?= $row['position'] ;?></td>
+                        <td>
+                            <?php 
+                                if ((int)$row['etage'] === 0) {
+                                    echo "RDC";
+                                } else {
+                                    echo $row['etage'];
+                                }
+                            ;?>
+                        </td>
+                        <td>
+                            <?php 
+                                $positionInt = (int)$row['position'];
+                                switch ($positionInt) {
+                                    case 1: 
+                                        echo "Droite";
+                                        break;
+                                    case 2:
+                                        echo "Gauche";
+                                        break;
+                                    case 3: 
+                                        echo "Fond";
+                                        break;
+                                    default:
+                                        echo "Non renseigné";
+                                }
+                            ;?>
+                        </td>
                         <td><?=$row['prix'] ;?></td>
                         <td>
                             <button type="button" class="btn btn-warning" data-toggle="modal" data-target="<?= "#modalUpdate" . $row['id'] ;?>">
@@ -195,7 +220,6 @@
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
-                                    <button type="button" class="btn btn-warning">Modifier</button>
                                 </div>
                                 </div>
                             </div>
