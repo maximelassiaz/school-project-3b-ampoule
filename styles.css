@@ -1,7 +1,6 @@
 body {
     background-color: rgb(223, 227, 241);
 }
-
 .landing-page {
     display: flex;
     min-height: 80vh;

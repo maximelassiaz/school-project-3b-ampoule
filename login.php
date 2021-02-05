@@ -33,6 +33,7 @@
                 if($result['password'] === $_POST['pwd']) {
                     session_start();
                     $_SESSION['username'] = $result['username'];
+                    $_SESSION['id_gardien'] = $result['id'];
                     header("Location: lightBulbList.php");
                     exit();
                 } else {

@@ -7,9 +7,12 @@
     }
 ?>
 <main>
-    <button type="submit" class="btn btn-primary my-3 mx-5" data-toggle="collapse" data-target="#toggleForm">
-            Créer une entrée
-    </button>
+    <div class="container text-center">
+        <button type="submit" class="btn btn-primary my-3" data-toggle="collapse" data-target="#toggleForm">
+                Créer une entrée
+        </button>
+    </div>
+    
     <div id="toggleForm" class="collapse">       
         <form class="col-sm-6 mx-auto p-3 my-5 bg-dark rounded" method="POST" action="add.php">
             <div class="form-group">
@@ -74,15 +77,13 @@
 
     ?>
 
-
-     
-
-
-    <table class="table table-striped table-dark w-75 mx-auto rounded">
+    <div class="table-responsive p-5">
+    <table class="table table-striped table-dark mx-auto rounded">
         <thead>
             <tr>
                 <th scope="col">Id</th>
                 <th scope="col">Date</th>
+                <th scope="col">Auteur</th>
                 <th scope="col">Étage</th>
                 <th scope="col">Position</th>
                 <th scope="col">Prix</th>
@@ -98,11 +99,31 @@
             $passwordDB = "";
 
             try {
+
+                if(isset($_GET['page']) && !empty($_GET['page'])){
+                    $currentPage = (int) strip_tags($_GET['page']);
+                }else{
+                    $currentPage = 1;
+                }
+
                 $conn = new PDO("mysql:host=$host;dbname=$db;charset=utf8", $usernameDB, $passwordDB);
                 $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-                $sql = "SELECT * FROM ampoule ORDER BY date_changement DESC";
+                $sql = "SELECT COUNT(*) AS totalLog FROM ampoule";
                 $stmt = $conn->prepare($sql);
+                $stmt->execute();
+
+                $result = $stmt->fetch();
+
+                $nbLog = $result['totalLog'];
+                $perPage = 5;
+                $pages = ceil($nbLog / $perPage);
+                $premier = ($currentPage * $perPage) - $perPage;
+
+                $sql = "SELECT * FROM ampoule.ampoule INNER JOIN ampoule.gardien ON ampoule.id_gardien = gardien.id ORDER BY date_changement DESC LIMIT :premier, :perPage;";
+                $stmt = $conn->prepare($sql);
+                $stmt->bindParam(':premier', $premier, PDO::PARAM_INT);
+                $stmt->bindParam(':perPage', $perPage, PDO::PARAM_INT);
                 $stmt->execute();
 
                 $rows = $stmt->fetchAll();
@@ -115,6 +136,9 @@
                         <tr>
                         <td><?php echo htmlspecialchars($row['id']) ;?></td>
                         <td><?php echo htmlspecialchars($dateFormat) ;?></td>
+                        <td>    
+                            <?php echo htmlspecialchars($row['name']) ;?>
+                        </td>
                         <td>
                             <?php 
                                 if ((int)$row['etage'] === 0) {
@@ -123,7 +147,7 @@
                                     echo htmlspecialchars($row['etage']);
                                 }
                             ;?>
-                        </td>
+                        </td>                        
                         <td>
                             <?php 
                                 $positionInt = (int)$row['position'];
@@ -251,20 +275,37 @@
                             </div>
                         </td>
                         </tr>
-                <?php        
-                }
-            } catch (PDOException $e) {
+                <?php } ?>
+                </tbody>
+            </table> 
+    </div>
+    
+            <nav class="navbar-dark">
+                <ul class="pagination justify-content-center">
+                    <!-- Lien vers la page précédente (désactivé si on se trouve sur la 1ère page) -->
+                    <li class="page-item <?= ($currentPage == 1) ? "disabled" : "" ?>">
+                        <a href="./lightBulbList.php?page=<?= $currentPage - 1 ?>" class="page-link">Précédente</a>
+                    </li>
+                    <?php for($page = 1; $page <= $pages; $page++): ?>
+                        <!-- Lien vers chacune des pages (activé si on se trouve sur la page correspondante) -->
+                        <li class="page-item <?= ($currentPage == $page) ? "active" : "" ?>">
+                            <a href="./lightBulbList.php?page=<?= $page ?>" class="page-link"><?= $page ?></a>
+                        </li>
+                    <?php endfor ?>
+                        <!-- Lien vers la page suivante (désactivé si on se trouve sur la dernière page) -->
+                        <li class="page-item <?= ($currentPage == $pages) ? "disabled" : "" ?>">
+                        <a href="./lightBulbList.php?page=<?= $currentPage + 1 ?>" class="page-link">Suivante</a>
+                    </li>
+                </ul>
+            </nav>
+            <?php } catch (PDOException $e) {
                 die("Erreur : " . $e->getMessage());
             }
         ?>
-        </tbody>
-    </table> 
-
-        <tbody>
         
-        </tbody>
-    </table>
-    <div id="overlay"></div>
+
+        
+    
 </main>
 
 <?php 
