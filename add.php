@@ -14,7 +14,7 @@
         $position = $_POST['select-position'];
         $price = $_POST['add-price'];
 
-        if(empty($date) || empty($etage) || empty($positon) || empty($price)) {
+        if(empty($date) || empty($etage) || empty($position) || empty($price)) {
             header("Location: lightBulbList.php?error=emptyfields");
             exit();
         }

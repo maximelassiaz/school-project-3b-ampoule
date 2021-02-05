@@ -113,14 +113,14 @@
                     $dateTimeFormat = date_format($datechg, "Y-m-d\TH:i") ?>
 
                         <tr>
-                        <td><?= $row['id'] ;?></td>
-                        <td><?= $dateFormat ;?></td>
+                        <td><?php echo htmlspecialchars($row['id']) ;?></td>
+                        <td><?php echo htmlspecialchars($dateFormat) ;?></td>
                         <td>
                             <?php 
                                 if ((int)$row['etage'] === 0) {
                                     echo "RDC";
                                 } else {
-                                    echo $row['etage'];
+                                    echo htmlspecialchars($row['etage']);
                                 }
                             ;?>
                         </td>
@@ -142,17 +142,17 @@
                                 }
                             ;?>
                         </td>
-                        <td><?=$row['prix'] ;?></td>
+                        <td><?php echo htmlspecialchars($row['prix']) ;?></td>
                         <td>
-                            <button type="button" class="btn btn-warning" data-toggle="modal" data-target="<?= "#modalUpdate" . $row['id'] ;?>">
+                            <button type="button" class="btn btn-warning" data-toggle="modal" data-target="<?php echo "#modalUpdate" . htmlspecialchars($row['id']) ;?>">
                                 Modifier
                             </button>
 
-                            <div class="modal fade" id="<?= "modalUpdate" . $row['id'] ;?>" tabindex="-1" role="dialog" aria-labelledby="<?= "modalUpdateLabel" . $row['id'] ;?>" aria-hidden="true">
+                            <div class="modal fade" id="<?php echo "modalUpdate" . htmlspecialchars($row['id']) ;?>" tabindex="-1" role="dialog" aria-labelledby="<?php echo "modalUpdateLabel" . htmlspecialchars($row['id']) ;?>" aria-hidden="true">
                             <div class="modal-dialog" role="document">
                                 <div class="modal-content bg-dark">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="<?= "modalUpdateLabel" . $row['id'] ;?>">Modifier une entrée</h5>
+                                    <h5 class="modal-title" id="<?php echo "modalUpdateLabel" . htmlspecialchars($row['id']) ;?>">Modifier une entrée</h5>
                                     <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                     </button>
@@ -161,16 +161,16 @@
                                     <form class="col-sm-6 mx-auto p-3 my-5 bg-dark rounded" method="POST" action="<?= "update.php?id=" . $row['id'] ;?>">
                                         <div class="form-group">
                                             <label for="modify-date" class="text-white">Date du changement :</label>
-                                            <input type="datetime-local" class="form-control" id="modify-date" name="modify-date" value="<?= $dateTimeFormat ;?>" required>
+                                            <input type="datetime-local" class="form-control" id="modify-date" name="modify-date" value="<?php echo htmlspecialchars($dateTimeFormat) ;?>" required>
                                         </div>
                                         <div class="form-group">
                                             <label for="modify-floor" class="text-white">Étage :</label>
                                             <select class="form-control" id="modify-floor" name="modify-floor" required>
-                                                <option selected="selected" value="<?= $row['etage'] ;?>">
+                                                <option selected="selected" value="<?php echo htmlspecialchars($row['etage']) ;?>">
                                                 <?php if ((int)$row['etage'] === 0) {
                                                             echo "RDC";
                                                         } else {
-                                                            echo "Étage " . $row['etage'];
+                                                            echo "Étage " . htmlspecialchars($row['etage']);
                                                         } ?>
                                                 </option>
                                                 <?php 
@@ -188,7 +188,7 @@
                                         <div class="form-group">
                                             <label for="modify-position" class="text-white">Position :</label>
                                             <select class="form-control" id="modify-position" name="modify-position" required>
-                                                <option selected=selected value="<?= $row['position'] ;?>">
+                                                <option selected=selected value="<?php echo htmlspecialchars($row['position']) ;?>">
                                                     <?php 
                                                         $positionInt = (int)$row['position'];
                                                         switch ($positionInt) {
@@ -213,7 +213,7 @@
                                         </div>
                                         <div class="form-group">
                                             <label for="modify-price" class="text-white">Prix de l'ampoule :</label>
-                                            <input type="number" step="any" class="form-control" id="modify-price" name="modify-price" value="<?= $row['prix'] ;?>" required>
+                                            <input type="number" step="any" class="form-control" id="modify-price" name="modify-price" value="<?php echo htmlspecialchars($row['prix']) ;?>" required>
                                         </div>
                                         <button type="submit" class="btn btn-primary" name="modify-submit">Valider l'entrée</button>
                                     </form>  
@@ -226,15 +226,15 @@
                             </div>
                         </td>
                         <td>
-                            <button type="button" class="btn btn-danger" data-toggle="modal" data-target="<?= "#modalDelete" . $row['id'] ;?>">
+                            <button type="button" class="btn btn-danger" data-toggle="modal" data-target="<?php echo "#modalDelete" . htmlspecialchars($row['id']) ;?>">
                                 Supprimer
                             </button>
 
-                            <div class="modal fade" id="<?= "modalDelete" . $row['id'] ;?>" tabindex="-1" role="dialog" aria-labelledby="<?= "modalDeleteLabel" . $row['id'] ;?>" aria-hidden="true">
+                            <div class="modal fade" id="<?php echo "modalDelete" . htmlspecialchars($row['id']) ;?>" tabindex="-1" role="dialog" aria-labelledby="<?php echo "modalDeleteLabel" . htmlspecialchars($row['id']) ;?>" aria-hidden="true">
                             <div class="modal-dialog" role="document">
                                 <div class="modal-content bg-dark">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="<?= "modalDeleteLabel" . $row['id'] ;?>">Supprimer une entrée</h5>
+                                    <h5 class="modal-title" id="<?php echo "modalDeleteLabel" . htmlspecialchars($row['id']) ;?>">Supprimer une entrée</h5>
                                     <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                     </button>
@@ -244,7 +244,7 @@
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
-                                    <a class="btn btn-danger" href="<?= "delete.php?id=" . $row['id'] ?>;" role="button">Supprimer définitivement</a>
+                                    <a class="btn btn-danger" href="<?php echo "delete.php?id=" . htmlspecialchars($row['id']) ?>;" role="button">Supprimer définitivement</a>
                                 </div>
                                 </div>
                             </div>
