@@ -18,16 +18,22 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <span class="navbar-text text-white ml-auto d-sm-none d-lg-block">
-                <?php echo "Bienvenue " . htmlspecialchars($_SESSION['username']) ;?>
-            </span>
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="logout.php">Se déconnecter</a>
-                </li>
-            </ul>
-        </div>
-        
+        <!-- Display username and log out link in navbar if connected -->
+        <?php 
+            if(isset($_SESSION['username'])) {
+        ?>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <span class="navbar-text text-white ml-auto d-sm-none d-lg-block">
+                    <?php echo "Bienvenue " . htmlspecialchars($_SESSION['username']) ;?>
+                </span>
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="logout.php">Se déconnecter</a>
+                    </li>
+                </ul>
+            </div>
+        <?php
+           }
+        ?>        
     </nav>
     

@@ -1,12 +1,15 @@
 <?php 
     $title = "Dashboard";
     require "header.php";
+
+    // Check if user is connected
     if(!isset($_SESSION['username'])) {
         header("Location: index.php");
         exit();
-    }
+    } else {
 ?>
 <main>
+    <!-- Collapse button to display a new entry form -->
     <div class="container text-center">
         <button type="submit" class="btn btn-primary my-3" data-toggle="collapse" data-target="#toggleForm">
                 Créer une entrée
@@ -50,6 +53,7 @@
         </form>  
     </div>
 
+    <!-- Display messages according to result of the add entry form -->
     <?php
         if(isset($_GET['add'])) {
             if($_GET['add'] === "success") {
@@ -77,6 +81,7 @@
 
     ?>
 
+    <!-- Display all data from database in a table -->
     <div class="table-responsive p-5">
     <table class="table table-striped table-dark mx-auto rounded">
         <thead>
@@ -98,6 +103,7 @@
             $usernameDB = "root";
             $passwordDB = "";
 
+            // Connection to PDO to display all data from SELECT query
             try {
 
                 if(isset($_GET['page']) && !empty($_GET['page'])){
@@ -109,6 +115,7 @@
                 $conn = new PDO("mysql:host=$host;dbname=$db;charset=utf8", $usernameDB, $passwordDB);
                 $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
+                // Search for number of total entries for pagination
                 $sql = "SELECT COUNT(*) AS totalLog FROM ampoule";
                 $stmt = $conn->prepare($sql);
                 $stmt->execute();
@@ -167,6 +174,8 @@
                             ;?>
                         </td>
                         <td><?php echo htmlspecialchars($row['prix']) ;?></td>
+
+                        <!-- Modify button modal to display a UPDATE form -->
                         <td>
                             <button type="button" class="btn btn-warning" data-toggle="modal" data-target="<?php echo "#modalUpdate" . htmlspecialchars($row['id']) ;?>">
                                 Modifier
@@ -249,6 +258,8 @@
                             </div>
                             </div>
                         </td>
+
+                        <!-- Delete button modal to display a DELETE form -->
                         <td>
                             <button type="button" class="btn btn-danger" data-toggle="modal" data-target="<?php echo "#modalDelete" . htmlspecialchars($row['id']) ;?>">
                                 Supprimer
@@ -280,6 +291,7 @@
             </table> 
     </div>
     
+            <!-- Pagination nav menu -->
             <nav class="navbar-dark">
                 <ul class="pagination justify-content-center">
                     <!-- Lien vers la page précédente (désactivé si on se trouve sur la 1ère page) -->
@@ -301,6 +313,7 @@
             <?php } catch (PDOException $e) {
                 die("Erreur : " . $e->getMessage());
             }
+        }
         ?>
         
 

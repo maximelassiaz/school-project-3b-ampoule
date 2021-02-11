@@ -1,4 +1,5 @@
 <?php 
+    // Check if submit modify button has been pressed
     if(!isset($_POST['modify-submit'])) {
         header("Location: lightBulbList.php");
         exit();
@@ -10,7 +11,7 @@
 
         $id = $_GET['id'];
         
-        
+        // Connection to PDO to update data
         try {
             $conn = new PDO("mysql:host=$host;dbname=$db;charset=utf8", $usernameDB, $passwordDB);
             $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);

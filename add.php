@@ -1,5 +1,7 @@
 <?php
     session_start();
+
+    // Check if submit button has been pressed
     if(!isset($_POST['add-submit'])) {
         header("Location: lightBulbList.php");
         exit();
@@ -16,11 +18,13 @@
         $price = $_POST['add-price'];
         $id_gardien = $_SESSION['id_gardien'];
 
+        // Check if any field is empty
         if(empty($date) || empty($etage) || empty($position) || empty($price)) {
             header("Location: lightBulbList.php?error=emptyfields");
             exit();
         }
 
+        // Connection to PDO to update table with new inputs
         try {
             $conn = new PDO("mysql:host=$host;dbname=$db;charset=utf8", $usernameDB, $passwordDB);
             $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);

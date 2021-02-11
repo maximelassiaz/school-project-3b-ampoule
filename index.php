@@ -18,20 +18,22 @@
     </form>
 
 
-
+    <!-- Display error message -->
+    <div class="bg-danger text-white mt-5 rounded">
     <?php
         if(isset($_GET['error'])) {
             if($_GET['error'] === "emptyfields") {
-                echo "<p class='text-danger font-weight-bold mt-5'>Vous devez remplir votre identifiant et votre mot de passe pour vous connecter.</p>";
+                echo "<p class='p-2 font-weight-bold'>Vous devez remplir votre identifiant et votre mot de passe pour vous connecter.</p>";
             }
         }
 
         if(isset($_GET['login'])) {
             if($_GET['login'] === "fail") {
-                echo "<p class='text-danger font-weight-bold mt-5'>Votre identifiant et/ou votre mot de passe est incorrect.</p>";
+                echo "<p class='p-2 font-weight-bold'>Votre identifiant et/ou votre mot de passe est incorrect.</p>";
             }
         }
     ?>   
+    </div>
 </main>
 
 <?php
