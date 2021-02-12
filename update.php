@@ -17,8 +17,8 @@
             $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
             $sql = "UPDATE ampoule 
-                    SET date_changement = :date, etage = :etage, position = :position, prix = :prix
-                    WHERE id = $id";
+                    SET ampoule_date_changement = :date, ampoule_etage = :etage, ampoule_position = :position, ampoule_prix = :prix
+                    WHERE ampoule_id = $id";
             $stmt = $conn->prepare($sql);
             $stmt->execute(array(
                 ':date' => $_POST['modify-date'],

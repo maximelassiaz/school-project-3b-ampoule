@@ -54,13 +54,16 @@
     </div>
 
     <!-- Display messages according to result of the add entry form -->
-    <?php
+    <?php    
         if(isset($_GET['add'])) {
-            if($_GET['add'] === "success") {
+            if($_GET['add'] === "success") { 
                 echo "<p class='text-success text-center font-weight-bold'>Votre nouvelle a bien été ajoutée</p>";
             }
         }
 
+    ?>
+
+    <?php
         if(isset($_GET['error'])) {
             if($_GET['error'] === "emptyfields") {
                 echo "<p class='text-danger text-center font-weight-bold'>Tous les champs doivent être remplis !</p>";
@@ -127,7 +130,7 @@
                 $pages = ceil($nbLog / $perPage);
                 $premier = ($currentPage * $perPage) - $perPage;
 
-                $sql = "SELECT * FROM ampoule.ampoule INNER JOIN ampoule.gardien ON ampoule.id_gardien = gardien.id ORDER BY date_changement DESC LIMIT :premier, :perPage;";
+                $sql = "SELECT * FROM ampoule.ampoule INNER JOIN ampoule.gardien ON ampoule.id_gardien = gardien.id ORDER BY ampoule_date_changement DESC LIMIT :premier, :perPage;";
                 $stmt = $conn->prepare($sql);
                 $stmt->bindParam(':premier', $premier, PDO::PARAM_INT);
                 $stmt->bindParam(':perPage', $perPage, PDO::PARAM_INT);
@@ -136,28 +139,28 @@
                 $rows = $stmt->fetchAll();
 
                 foreach($rows as $row) {
-                    $datechg = new DateTime($row['date_changement']);
+                    $datechg = new DateTime($row['ampoule_date_changement']);
                     $dateFormat = date_format($datechg, 'd/m/Y - H:i'); 
                     $dateTimeFormat = date_format($datechg, "Y-m-d\TH:i") ?>
 
                         <tr>
-                        <td><?php echo htmlspecialchars($row['id']) ;?></td>
+                        <td><?php echo htmlspecialchars($row['ampoule_id']) ;?></td>
                         <td><?php echo htmlspecialchars($dateFormat) ;?></td>
                         <td>    
                             <?php echo htmlspecialchars($row['name']) ;?>
                         </td>
                         <td>
                             <?php 
-                                if ((int)$row['etage'] === 0) {
+                                if ((int)$row['ampoule_etage'] === 0) {
                                     echo "RDC";
                                 } else {
-                                    echo htmlspecialchars($row['etage']);
+                                    echo htmlspecialchars($row['ampoule_etage']);
                                 }
                             ;?>
                         </td>                        
                         <td>
                             <?php 
-                                $positionInt = (int)$row['position'];
+                                $positionInt = (int)$row['ampoule_position'];
                                 switch ($positionInt) {
                                     case 1: 
                                         echo "Droite";
@@ -173,25 +176,25 @@
                                 }
                             ;?>
                         </td>
-                        <td><?php echo htmlspecialchars($row['prix']) ;?></td>
+                        <td><?php echo htmlspecialchars($row['ampoule_prix']) ;?></td>
 
                         <!-- Modify button modal to display a UPDATE form -->
                         <td>
-                            <button type="button" class="btn btn-warning" data-toggle="modal" data-target="<?php echo "#modalUpdate" . htmlspecialchars($row['id']) ;?>">
+                            <button type="button" class="btn btn-warning" data-toggle="modal" data-target="<?php echo "#modalUpdate" . htmlspecialchars($row['ampoule_id']) ;?>">
                                 Modifier
                             </button>
 
-                            <div class="modal fade" id="<?php echo "modalUpdate" . htmlspecialchars($row['id']) ;?>" tabindex="-1" role="dialog" aria-labelledby="<?php echo "modalUpdateLabel" . htmlspecialchars($row['id']) ;?>" aria-hidden="true">
+                            <div class="modal fade" id="<?php echo "modalUpdate" . htmlspecialchars($row['ampoule_id']) ;?>" tabindex="-1" role="dialog" aria-labelledby="<?php echo "modalUpdateLabel" . htmlspecialchars($row['ampoule_id']) ;?>" aria-hidden="true">
                             <div class="modal-dialog" role="document">
                                 <div class="modal-content bg-dark">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="<?php echo "modalUpdateLabel" . htmlspecialchars($row['id']) ;?>">Modifier une entrée</h5>
+                                    <h5 class="modal-title" id="<?php echo "modalUpdateLabel" . htmlspecialchars($row['ampoule_id']) ;?>">Modifier une entrée</h5>
                                     <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
                                 <div class="modal-body">
-                                    <form class="col-sm-6 mx-auto p-3 my-5 bg-dark rounded" method="POST" action="<?= "update.php?id=" . $row['id'] ;?>">
+                                    <form class="col-sm-6 mx-auto p-3 my-5 bg-dark rounded" method="POST" action="<?= "update.php?id=" . $row['ampoule_id'] ;?>">
                                         <div class="form-group">
                                             <label for="modify-date" class="text-white">Date du changement :</label>
                                             <input type="datetime-local" class="form-control" id="modify-date" name="modify-date" value="<?php echo htmlspecialchars($dateTimeFormat) ;?>" required>
@@ -199,11 +202,11 @@
                                         <div class="form-group">
                                             <label for="modify-floor" class="text-white">Étage :</label>
                                             <select class="form-control" id="modify-floor" name="modify-floor" required>
-                                                <option selected="selected" value="<?php echo htmlspecialchars($row['etage']) ;?>">
-                                                <?php if ((int)$row['etage'] === 0) {
+                                                <option selected="selected" value="<?php echo htmlspecialchars($row['ampoule_etage']) ;?>">
+                                                <?php if ((int)$row['ampoule_etage'] === 0) {
                                                             echo "RDC";
                                                         } else {
-                                                            echo "Étage " . htmlspecialchars($row['etage']);
+                                                            echo "Étage " . htmlspecialchars($row['ampoule_etage']);
                                                         } ?>
                                                 </option>
                                                 <?php 
@@ -221,9 +224,9 @@
                                         <div class="form-group">
                                             <label for="modify-position" class="text-white">Position :</label>
                                             <select class="form-control" id="modify-position" name="modify-position" required>
-                                                <option selected=selected value="<?php echo htmlspecialchars($row['position']) ;?>">
+                                                <option selected=selected value="<?php echo htmlspecialchars($row['ampoule_position']) ;?>">
                                                     <?php 
-                                                        $positionInt = (int)$row['position'];
+                                                        $positionInt = (int)$row['ampoule_position'];
                                                         switch ($positionInt) {
                                                             case 1: 
                                                                 echo "Droite";
@@ -246,7 +249,7 @@
                                         </div>
                                         <div class="form-group">
                                             <label for="modify-price" class="text-white">Prix de l'ampoule :</label>
-                                            <input type="number" step="any" class="form-control" id="modify-price" name="modify-price" value="<?php echo htmlspecialchars($row['prix']) ;?>" required>
+                                            <input type="number" step="any" class="form-control" id="modify-price" name="modify-price" value="<?php echo htmlspecialchars($row['ampoule_prix']) ;?>" required>
                                         </div>
                                         <button type="submit" class="btn btn-primary" name="modify-submit">Valider l'entrée</button>
                                     </form>  
@@ -261,15 +264,15 @@
 
                         <!-- Delete button modal to display a DELETE form -->
                         <td>
-                            <button type="button" class="btn btn-danger" data-toggle="modal" data-target="<?php echo "#modalDelete" . htmlspecialchars($row['id']) ;?>">
+                            <button type="button" class="btn btn-danger" data-toggle="modal" data-target="<?php echo "#modalDelete" . htmlspecialchars($row['ampoule_id']) ;?>">
                                 Supprimer
                             </button>
 
-                            <div class="modal fade" id="<?php echo "modalDelete" . htmlspecialchars($row['id']) ;?>" tabindex="-1" role="dialog" aria-labelledby="<?php echo "modalDeleteLabel" . htmlspecialchars($row['id']) ;?>" aria-hidden="true">
+                            <div class="modal fade" id="<?php echo "modalDelete" . htmlspecialchars($row['ampoule_id']) ;?>" tabindex="-1" role="dialog" aria-labelledby="<?php echo "modalDeleteLabel" . htmlspecialchars($row['ampoule_id']) ;?>" aria-hidden="true">
                             <div class="modal-dialog" role="document">
                                 <div class="modal-content bg-dark">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="<?php echo "modalDeleteLabel" . htmlspecialchars($row['id']) ;?>">Supprimer une entrée</h5>
+                                    <h5 class="modal-title" id="<?php echo "modalDeleteLabel" . htmlspecialchars($row['ampoule_id']) ;?>">Supprimer une entrée</h5>
                                     <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                     </button>
@@ -279,7 +282,7 @@
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
-                                    <a class="btn btn-danger" href="<?php echo "delete.php?id=" . htmlspecialchars($row['id']) ?>;" role="button">Supprimer définitivement</a>
+                                    <a class="btn btn-danger" href="<?php echo "delete.php?id=" . htmlspecialchars($row['ampoule_id']) ?>;" role="button">Supprimer définitivement</a>
                                 </div>
                                 </div>
                             </div>

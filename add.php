@@ -29,7 +29,7 @@
             $conn = new PDO("mysql:host=$host;dbname=$db;charset=utf8", $usernameDB, $passwordDB);
             $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-            $sql = "INSERT INTO ampoule (date_changement, id_gardien, etage, position, prix)
+            $sql = "INSERT INTO ampoule (ampoule_date_changement, id_gardien, ampoule_etage, ampoule_position, ampoule_prix)
                     VALUES (:date, :id_gardien, :etage,  :position, :prix)";
             $stmt = $conn->prepare($sql);
             $stmt->bindParam(':date', $date);
